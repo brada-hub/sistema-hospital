@@ -10,12 +10,12 @@ class Rol extends Model
 {
     use HasFactory;
 
-    protected $table = 'rols'; // si estás usando "rols" en lugar de "roles"
+    protected $table = 'rols'; // tabla en plural pero con 's'
     protected $fillable = ['nombre', 'descripcion'];
 
     public function usuarios()
     {
-        return $this->hasMany(Usuario::class);
+        return $this->hasMany(User::class, 'rol_id'); // relación correcta con users
     }
 
     protected static function booted()

@@ -1,67 +1,59 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\RolController;
-use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\{
+    RolController,
+    UserController,
+    PacienteController,
+    InternacionController,
+    MedicamentoController,
+    SignoController,
+    AlimentacionController,
+    HospitalController,
+    TratamientoController,
+    ControlController,
+    ValorController,
+    ConsumeController,
+    CuidadoController,
+    EspecialidadController,
+    SalaController,
+    CamaController,
+    OcupacionController,
+    RecetaController,
+    AdministraController,
+    CuidadoAplicadoController
+};
 
-Route::apiResource('roles', RolController::class);
-Route::get('/ping', function () {
-    return response()->json(['pong' => true]);
+// Rutas públicas (ping, login, registro)
+Route::get('/ping', fn () => response()->json(['pong' => true]));
+Route::post('/login', [UserController::class, 'login']);
+Route::post('/register', [UserController::class, 'store']);
+
+// Rutas protegidas con Sanctum
+Route::middleware('auth:sanctum')->group(function () {
+    // Roles y usuarios
+    Route::apiResource('roles', RolController::class);
+    Route::apiResource('usuarios', UserController::class);
+
+    // Recursos hospitalarios
+    Route::apiResource('pacientes', PacienteController::class);
+    Route::apiResource('internaciones', InternacionController::class);
+    Route::apiResource('medicamentos', MedicamentoController::class);
+    Route::apiResource('signos', SignoController::class);
+    Route::apiResource('alimentaciones', AlimentacionController::class);
+    Route::apiResource('hospitals', HospitalController::class);
+    Route::apiResource('tratamientos', TratamientoController::class);
+    Route::apiResource('controls', ControlController::class);
+    Route::apiResource('valores', ValorController::class);
+    Route::apiResource('consumes', ConsumeController::class);
+    Route::apiResource('cuidados', CuidadoController::class);
+    Route::apiResource('especialidades', EspecialidadController::class);
+    Route::apiResource('salas', SalaController::class);
+    Route::apiResource('camas', CamaController::class);
+    Route::apiResource('ocupaciones', OcupacionController::class);
+    Route::apiResource('recetas', RecetaController::class);
+    Route::apiResource('administraciones', AdministraController::class);
+    Route::apiResource('cuidados-aplicados', CuidadoAplicadoController::class);
+
+    // Logout
+    Route::post('/logout', [UserController::class, 'logout']);
 });
-
-Route::apiResource('usuarios', UsuarioController::class);
-use App\Http\Controllers\PacienteController;
-
-Route::apiResource('pacientes', PacienteController::class);
-use App\Http\Controllers\InternacionController;
-
-Route::apiResource('internaciones', InternacionController::class);
-use App\Http\Controllers\MedicamentoController;
-
-Route::apiResource('medicamentos', MedicamentoController::class);
-use App\Http\Controllers\SignoController;
-
-Route::apiResource('signos', SignoController::class);
-use App\Http\Controllers\AlimentacionController;
-
-Route::apiResource('alimentaciones', AlimentacionController::class);
-use App\Http\Controllers\HospitalController;
-
-Route::apiResource('hospitals', HospitalController::class);
-use App\Http\Controllers\TratamientoController;
-
-Route::apiResource('tratamientos', TratamientoController::class);
-use App\Http\Controllers\ControlController;
-
-Route::apiResource('controls', ControlController::class);
-use App\Http\Controllers\ValorController;
-
-Route::apiResource('valores', ValorController::class);
-use App\Http\Controllers\ConsumeController;
-
-Route::apiResource('consumes', ConsumeController::class);
-use App\Http\Controllers\CuidadoController;
-
-Route::apiResource('cuidados', CuidadoController::class);
-use App\Http\Controllers\EspecialidadController;
-
-Route::apiResource('especialidades', EspecialidadController::class);
-use App\Http\Controllers\SalaController;
-
-Route::apiResource('salas', SalaController::class);
-use App\Http\Controllers\CamaController;
-
-Route::apiResource('camas', CamaController::class);
-use App\Http\Controllers\OcupacionController;
-
-Route::apiResource('ocupaciones', OcupacionController::class);
-use App\Http\Controllers\RecetaController;
-
-Route::apiResource('recetas', RecetaController::class);
-use App\Http\Controllers\AdministraController;
-
-Route::apiResource('administraciones', AdministraController::class);
-
-use App\Http\Controllers\CuidadoAplicadoController;
-
-Route::apiResource('cuidados-aplicados', CuidadoAplicadoController::class);
