@@ -1,0 +1,67 @@
+
+services:
+  # Servicio para la base de datos (MySQL)
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'hospital'
+      MYSQL_ROOT_PASSWORD: 'secret'
+    volumes:
+      - ./docker/dbdata:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  # Servicio para el backend (Laravel)
+  app:
+    build:
+      context: ./hospital-backend
+      dockerfile: Dockerfile
+    container_name: laravel-app
+    restart: always
+    volumes:
+      - ./hospital-backend:/var/www
+    depends_on:
+      - mysql
+
+  # Servicio para el servidor web (Nginx)
+  webserver:
+    image: nginx:alpine
+    container_name: nginx-webserver
+    restart: always
+    volumes:
+      - ./hospital-backend:/var/www
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "8000:80"
+    depends_on:
+      - app
+
+  # Servicio para el frontend (Quasar)
+  frontend:
+    build:
+      context: ./hospital-frontend
+      dockerfile: Dockerfile
+    container_name: quasar-frontend
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./hospital-frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    command: ["npx", "quasar", "dev", "--host", "0.0.0.0"]
+
+
+
+  # Servicio para phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin-container
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: secret
+    depends_on:
+      - mysql
