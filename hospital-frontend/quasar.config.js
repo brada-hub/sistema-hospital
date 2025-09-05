@@ -3,7 +3,7 @@
 
 import { defineConfig } from '#q-app/wrappers'
 import { fileURLToPath } from 'node:url'
-
+import path from 'path'
 export default defineConfig((ctx) => {
   return {
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
@@ -39,6 +39,7 @@ export default defineConfig((ctx) => {
       },
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
+
       // vueRouterBase,
       // vueDevtools,
       // vueOptionsAPI: false,
@@ -87,15 +88,23 @@ export default defineConfig((ctx) => {
         ],
       ],
     },
-
+    vite: {
+      resolve: {
+        alias: {
+          pages: path.resolve(__dirname, 'src/pages'),
+          layouts: path.resolve(__dirname, 'src/layouts'),
+          stores: path.resolve(__dirname, 'src/stores'),
+          boot: path.resolve(__dirname, 'src/boot'),
+        },
+      },
+    },
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#devserver
     devServer: {
-      host: '0.0.0.0',  // 👈 permite conexiones externas
-      port: 9000,       // 👈 debe coincidir con docker-compose
+      host: '0.0.0.0', // 👈 permite conexiones externas
+      port: 9000, // 👈 debe coincidir con docker-compose
       strictPort: true, // 👈 asegura que use el puerto 9000
-      open: false       // 👈 evita abrir navegador dentro del contenedor
+      open: false, // 👈 evita abrir navegador dentro del contenedor
     },
-
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#framework
     framework: {
@@ -112,7 +121,7 @@ export default defineConfig((ctx) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: [],
+      plugins: ['Dialog', 'Notify'],
     },
 
     // animations: 'all', // --- includes all animations

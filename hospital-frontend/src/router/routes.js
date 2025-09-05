@@ -1,14 +1,41 @@
 const routes = [
+  // Login y Register (fuera del layout)
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
+    name: 'root',
+    redirect: '/login',
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('src/pages/PageLogin.vue'),
   },
 
-  // Always leave this as last one,
-  // but you can also remove it
+  // Dashboard y rutas protegidas (dentro del MainLayout)
+  {
+    path: '/dashboard',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'dashboard',
+        component: () => import('pages/PageDashboard.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'pacientes',
+        name: 'pacientes',
+        component: () => import('pages/PagePacientes.vue'),
+        meta: { requiresAuth: true },
+      },
+      // Ruta de usuarios eliminada temporalmente
+    ],
+  },
+
+  // Fallback 404
   {
     path: '/:catchAll(.*)*',
+    name: 'error404',
     component: () => import('pages/ErrorNotFound.vue'),
   },
 ]

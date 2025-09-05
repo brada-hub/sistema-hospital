@@ -4,10 +4,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens; // <-- IMPORTANTE
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable; // <-- Agregamos HasApiTokens
 
     protected $fillable = [
         'nombre',
@@ -15,7 +16,7 @@ class User extends Authenticatable
         'telefono',
         'email',
         'password',
-        'rol_id', // ← debe coincidir con la migración
+        'rol_id',
     ];
 
     protected $hidden = [
@@ -23,13 +24,10 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed', // Laravel 11 ya soporta
+    ];
 
     public function rol()
     {

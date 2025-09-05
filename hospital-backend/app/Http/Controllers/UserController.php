@@ -6,7 +6,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\RateLimiter;
 class UserController extends Controller
 {
     public function index()
@@ -75,4 +77,45 @@ class UserController extends Controller
         Log::warning("Usuario eliminado", ['id' => $id]);
         return response()->noContent(); // 204
     }
+   public function login(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required|string',
+    ]);
+
+    $key = 'login-attempts:' . $request->ip();
+
+    if (RateLimiter::tooManyAttempts($key, 5)) {
+        return response()->json([
+            'message' => 'Demasiados intentos fallidos. Intenta de nuevo en ' . RateLimiter::availableIn($key) . ' segundos.'
+        ], 429);
+    }
+
+    if (!Auth::attempt($request->only('email','password'))) {
+        RateLimiter::hit($key, 60); // bloquea 60s
+        return response()->json(['message' => 'Credenciales incorrectas'], 401);
+    }
+
+    RateLimiter::clear($key);
+
+    $user = Auth::user();
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    return response()->json([
+        'access_token' => $token,
+        'token_type' => 'Bearer',
+        'user' => $user
+    ]);
+}
+public function logout(Request $request)
+{
+    // Revocar el token actual
+    $request->user()->currentAccessToken()->delete();
+
+    return response()->json([
+        'message' => 'Sesión cerrada correctamente'
+    ], 200);
+}
+
 }

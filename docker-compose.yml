@@ -14,11 +14,10 @@ services:
       - "3306:3306"
 
   # Servicio para el backend (Laravel)
-  app:
+  hospital-backend:
     build:
       context: ./hospital-backend
       dockerfile: Dockerfile
-    container_name: laravel-app
     restart: always
     volumes:
       - ./hospital-backend:/var/www
@@ -36,14 +35,14 @@ services:
     ports:
       - "8000:80"
     depends_on:
-      - app
+      - hospital-backend
 
   # Servicio para el frontend (Quasar)
-  frontend:
+  hospital-frontend:
     build:
       context: ./hospital-frontend
       dockerfile: Dockerfile
-    container_name: quasar-frontend
+    restart: always
     ports:
       - "9000:9000"
     volumes:
